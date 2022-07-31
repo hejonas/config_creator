@@ -6,6 +6,25 @@ import argparse
 import logging
 import glob
 
+def get_containing_defines(f):
+    included_defines = []
+
+    for line in f:
+        # Find every #ifdef
+        if line.startswith('#ifdef '):
+            included_defines.append(line[len('#ifdef '):])
+
+        # Find every #ifndef
+        if line.startswith('#ifndef '):
+            included_defines.append(line[len('#ifndef '):])
+
+        #TODO: Find every #if defined(XYZ)
+        #TODO: Find every #if defined(XYZ) || defined(ZYX)
+
+    return included_defines
+
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -37,8 +56,12 @@ if __name__ == '__main__':
         logging.error('The path specified does not exist')
         sys.exit(1)
 
+    defines_in_path = []
     for filename in glob.glob(os.path.join(input_path, '**/*.c'), recursive=True):
         with open(os.path.join(os.getcwd(), filename), 'r') as f: # open in readonly mode
-            logging.info('Searched file: {}'.format(filename)) 
+            logging.info('Searching file: {}'.format(filename)) 
+            defines_in_path.extend(get_containing_defines(f))
     
+    print(defines_in_path)
+
     sys.exit(0)
