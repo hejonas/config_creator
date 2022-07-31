@@ -62,6 +62,9 @@ if __name__ == '__main__':
             logging.info('Searching file: {}'.format(filename)) 
             defines_in_path.extend(get_containing_defines(f))
     
+    # Remove doubles
+    defines_in_path = list(dict.fromkeys(defines_in_path))
+
     print(defines_in_path)
 
     sys.exit(0)
