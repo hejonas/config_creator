@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import logging
+import glob
 
 if __name__ == '__main__':
 
@@ -36,6 +37,8 @@ if __name__ == '__main__':
         logging.error('The path specified does not exist')
         sys.exit(1)
 
-    print('\n'.join(os.listdir(input_path)))
+    for filename in glob.glob(os.path.join(input_path, '**/*.c'), recursive=True):
+        with open(os.path.join(os.getcwd(), filename), 'r') as f: # open in readonly mode
+            logging.info('Searched file: {}'.format(filename)) 
     
     sys.exit(0)
