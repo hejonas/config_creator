@@ -6,7 +6,13 @@ import argparse
 import logging
 import glob
 
-def get_containing_defines(f):
+def get_containing_defines_in_file(f):
+    """
+    Returns a list of all possible defines in a file
+
+    Keyword arguments:
+    f -- file handle to input file
+    """
     included_defines = []
 
     for line in f:
@@ -18,12 +24,24 @@ def get_containing_defines(f):
         if line.startswith('#ifndef '):
             included_defines.append(line[len('#ifndef '):])
 
-        #TODO: Find every #if defined(XYZ)
-        #TODO: Find every #if defined(XYZ) || defined(ZYX)
+        # TODO: Find every #if defined(XYZ)
+        # TODO: Find every #if defined(XYZ) || defined(ZYX)
 
     return included_defines
 
 
+def generate_config_file(defines):
+    """
+    Generates a config file with all possible defines in a path
+    commented out.
+
+    Keyword arguments:
+    defines -- list of defines to include in config file
+    """
+    f = open("config_file.h", 'w')
+    for define in defines:
+        f.write("//#define {}\n".format(define))
+    f.close()
 
 if __name__ == '__main__':
 
@@ -60,11 +78,11 @@ if __name__ == '__main__':
     for filename in glob.glob(os.path.join(input_path, '**/*.c'), recursive=True):
         with open(os.path.join(os.getcwd(), filename), 'r') as f: # open in readonly mode
             logging.info('Searching file: {}'.format(filename)) 
-            defines_in_path.extend(get_containing_defines(f))
+            defines_in_path.extend(get_containing_defines_in_file(f))
     
     # Remove doubles
     defines_in_path = list(dict.fromkeys(defines_in_path))
 
-    print(defines_in_path)
+    generate_config_file(defines_in_path)
 
     sys.exit(0)
